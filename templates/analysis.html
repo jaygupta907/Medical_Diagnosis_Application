@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experimental Data Analysis</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/analysis.css') }}">
+</head>
+<body>
+  <div class="section-gap"></div>
+  <!-- Navigation Link back to Home -->
+  <div style="text-align: center; margin-bottom: 20px;">
+    <a href="/" class="nav-link">Home</a>
+  </div>
+  
+  <h1 style="text-align: center; font-size: 2rem; margin-bottom: 30px;">Experimental Data Analysis</h1>
+  
+  <div class="main-content">
+    <!-- Buttons for analysis actions -->
+    <button class="clear-uploads-btn" onclick="runTSNE()">Generate t-SNE Visualizations</button>
+    <button class="clear-uploads-btn" onclick="runDistribution()">Generate Image Class Distribution</button>
+    
+    <div class="section-gap"></div>
+    
+    <!-- Loader Element -->
+    <div id="loader" class="loader"></div>
+    
+    <!-- t-SNE Section -->
+    <div id="tsne-images" style="display: none;">
+      <h2>t-SNE Visualization</h2>
+      <div class="image-gallery">
+        <div class="image-pair">
+          <img id="tsne-train" alt="Train t-SNE" style="display: none;" />
+          <p>Train Set</p>
+        </div>
+        <div class="image-pair">
+          <img id="tsne-test" alt="Test t-SNE" style="display: none;" />
+          <p>Test Set</p>
+        </div>
+      </div>
+      <div id="tsne-note" class="imbalance-info" style="display: none;">
+        <p>
+            The t-SNE visualizations reveal that the three classes—PNEUMONIA, NORMAL, and COVID19—form somewhat distinct clusters, especially 
+            in the train set. COVID19 samples (green) show clearer separation, while PNEUMONIA (blue) and NORMAL (red) overlap more,
+            indicating potential confusion between these two classes. This overlap suggests the model might struggle to distinguish between 
+            PNEUMONIA and NORMAL, highlighting the need for better feature learning or class-specific augmentation. The test set shows similar
+             patterns but with slightly more mixing, which could affect generalization.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Image Class Distribution Section -->
+    <div id="distribution-images" style="display: none; margin-top: 40px;">
+      <h2>Image Class Distribution</h2>
+      <div class="image-gallery">
+        <div class="image-pair">
+          <img id="dist-train" alt="Train Distribution" style="display: none;" />
+          <p>Train Set</p>
+        </div>
+        <div class="image-pair">
+          <img id="dist-test" alt="Test Distribution" style="display: none;" />
+          <p>Test Set</p>
+        </div>
+      </div>
+      <div id="imbalance-note" class="imbalance-info" style="display: none;">
+        <p>
+          The dataset shows a clear class imbalance, with <strong>PNEUMONIA</strong> heavily overrepresented and <strong>COVID19</strong> underrepresented.
+          This can lead to model bias and poor performance on minority classes.
+          To address this, techniques like data augmentation, resampling, class weighting, or synthetic data generation can be used,
+          along with metrics like <strong>precision</strong> and <strong>F1-score</strong> for better evaluation.
+        </p>
+      </div>
+    </div>
+  
+  </div>
+  
+  <script>
+    async function runTSNE() {
+      // Show loader before starting API call
+      document.getElementById("loader").style.display = "block";
+      // Hide any previous images
+      document.getElementById("tsne-images").style.display = "none";
+      document.getElementById("tsne-note").style.display = "none";
+      
+      const res = await fetch('/run_tsne', { method: 'POST' });
+      const result = await res.json();
+      
+      // Hide loader once API call is complete
+      document.getElementById("loader").style.display = "none";
+      
+      if (result.status === "success") {
+        document.getElementById("tsne-images").style.display = "block";
+        const trainImg = document.getElementById("tsne-train");
+        const testImg = document.getElementById("tsne-test");
+        trainImg.src = result.data.train + "?t=" + Date.now();
+        testImg.src = result.data.test + "?t=" + Date.now();
+        trainImg.style.display = "block";
+        testImg.style.display = "block";
+
+        document.getElementById("tsne-note").style.display = "block";
+      } else {
+        alert("Failed to generate t-SNE plots: " + result.message);
+      }
+    }
+    
+    async function runDistribution() {
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("distribution-images").style.display = "none";
+      document.getElementById("imbalance-note").style.display = "none";
+      
+      const res = await fetch('/run_distribution', { method: 'POST' });
+      const result = await res.json();
+      
+      document.getElementById("loader").style.display = "none";
+      
+      if (result.status === "success") {
+        document.getElementById("distribution-images").style.display = "block";
+        const trainImg = document.getElementById("dist-train");
+        const testImg = document.getElementById("dist-test");
+        trainImg.src = result.data.train + "?t=" + Date.now();
+        testImg.src = result.data.test + "?t=" + Date.now();
+        trainImg.style.display = "block";
+        testImg.style.display = "block";
+        
+        document.getElementById("imbalance-note").style.display = "block";
+      } else {
+        alert("Failed to generate class distribution plots: " + result.message);
+      }
+    }
+  </script>
+</body>
+</html>

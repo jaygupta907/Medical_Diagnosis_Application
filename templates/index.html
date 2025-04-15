@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chest X-ray Classification</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body>
+
+  <div class="hero-section">
+    <div class="hero-image"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>AI-Powered Chest X-ray Classification</h1>
+      <p>
+        Upload a chest X-ray image and our deep learning model will predict whether it shows signs of illness such as pneumonia or covid-19.
+      </p>
+    </div>
+  </div>
+
+  <div class="section-gap"></div>
+
+  <div class="main-content">
+    <h2>Upload a Chest X-ray</h2>
+    <form id="upload-form" action="/predict/" method="post" enctype="multipart/form-data">
+      <label for="file-input" class="custom-file-upload">Choose File</label>
+      <input type="file" name="file" id="file-input" required>
+      <button type="submit">Upload & Classify</button>
+    </form>
+
+    <div class="loader" id="loading"></div>
+
+    <h2>Prediction Result</h2>
+    <div class="image-container">
+      <img id="uploaded" src="" alt="Uploaded Image" style="display:none;">
+      <h3 id="prediction" style="display:none;"></h3>
+    </div>
+
+    <div class="retrain-section">
+      <button id="retrain-btn">Retrain Model</button>
+      <div id="progress-container" style="display: none;">
+        <div class="progress-ring">
+          <svg width="120" height="120">
+            <circle class="progress-ring__background" r="50" cx="60" cy="60" />
+            <circle class="progress-ring__circle" r="50" cx="60" cy="60" />
+          </svg>
+          <div class="progress-ring__text" id="progress-text">0%</div>
+        </div>
+        <div id="progress-done-message">Training Done ✅</div>
+      </div>
+    </div>
+
+    <div class="section-gap"></div>
+    <a href="/experimental-analysis" class="nav-link">🔬 Experimental Data Analysis</a>
+
+    <div class="section-gap"></div>
+
+    <h2 class="previous-uploads-title">Previous Uploads</h2>
+    <div class="image-gallery" id="previous-uploads"></div>
+  </div>
+  
+  <div class="section-gap"></div>
+  <script>
+    document.getElementById("retrain-btn").addEventListener("click", function () {
+      const progressText = document.getElementById("progress-text");
+      const progressContainer = document.getElementById("progress-container");
+      const progressCircle = document.querySelector(".progress-ring__circle");
+      const doneMessage = document.getElementById("progress-done-message");
+
+      doneMessage.style.display = "none";
+
+      const RADIUS = 50;
+      const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+      progressCircle.style.strokeDasharray = CIRCUMFERENCE;
+      progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
+
+      progressContainer.style.display = "flex";
+      progressText.textContent = "0%";
+
+      const eventSource = new EventSource("/retrain/");
+
+      eventSource.onmessage = function (event) {
+        const progress = parseInt(event.data);
+        const offset = CIRCUMFERENCE - (progress / 100) * CIRCUMFERENCE;
+        progressCircle.style.strokeDashoffset = offset;
+        progressText.textContent = `${progress}%`;
+
+        if (progress >= 100) {
+          doneMessage.style.display = "block";
+          eventSource.close();
+        }
+      };
+
+      eventSource.onerror = function () {
+        eventSource.close();
+        progressText.textContent = "Training failed or interrupted.";
+      };
+    });
+
+    async function fetchPreviousUploads() {
+      const res = await fetch("/get_previous_uploads/");
+      const result = await res.json();
+
+      const gallery = document.getElementById("previous-uploads");
+      gallery.innerHTML = "";
+
+      result.previous_uploads.forEach((entry) => {
+        const imageBox = document.createElement("div");
+        imageBox.className = "image-pair";
+
+        const image = document.createElement("img");
+        image.src = `/${entry.image}?t=${new Date().getTime()}`;
+        image.alt = "Previous Upload";
+
+        const label = document.createElement("p");
+        label.textContent = `Prediction: ${entry.prediction}`;
+        label.style.marginTop = "10px";
+        label.style.color = "#222";
+
+        imageBox.appendChild(image);
+        imageBox.appendChild(label);
+        gallery.appendChild(imageBox);
+      });
+    }
+
+    document.getElementById("upload-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      document.getElementById("loading").style.display = "block";
+
+      const res = await fetch("/predict/", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+      document.getElementById("loading").style.display = "none";
+
+      if (result.image && result.prediction) {
+        document.getElementById("uploaded").src = result.image + "?t=" + Date.now();
+        document.getElementById("uploaded").style.display = "block";
+        document.getElementById("prediction").textContent = "The Person is suspected to have : " + result.prediction;
+        document.getElementById("prediction").style.display = "block";
+        setTimeout(fetchPreviousUploads, 500);
+      }
+    };
+
+    window.onload = fetchPreviousUploads;
+  </script>
+</body>
+</html>

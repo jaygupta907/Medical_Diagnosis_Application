@@ -1,0 +1,166 @@
+/* Reset styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Overall Page Styling */
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #ffffff;
+    color: #222;
+    text-align: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  /* Section Gap */
+  .section-gap {
+    height: 80px;
+  }
+  
+  /* Navigation Link Back to Home */
+  .nav-link {
+    font-size: 1rem;
+    color: #222;
+    text-decoration: none;
+    padding: 10px 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+  }
+  .nav-link:hover {
+    background: #e0e0e0;
+  }
+  
+  /* Main Content Container */
+  .main-content {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Header Title */
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #222;
+  }
+  
+  /* Button Styling for Analysis Actions */
+  .clear-uploads-btn {
+    background: linear-gradient(135deg, #222, #0a0a0a);
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 10px;
+  }
+  .clear-uploads-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Section for t-SNE Images */
+  #tsne-images, 
+  #distribution-images {
+    margin-top: 40px;
+  }
+  
+  /* Section Titles */
+  #tsne-images h2,
+  #distribution-images h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #222;
+  }
+  
+  /* Gallery Container */
+  .image-gallery {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  
+  /* Individual Image Container */
+  .image-pair {
+    background: #1f1f1f; /* Dark grey background */
+    padding: 10px;
+    border-radius: 8px;
+    width: 400px;          /* Increased width for larger display */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Images within a Pair */
+  .image-pair img {
+    width: 100%;      /* Fill container width */
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .image-pair img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Labels under Images */
+  .image-pair p {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #fff;      /* White text for contrast */
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
+    margin: 0;
+  }
+
+  .loader {
+    border: 8px solid rgba(0,0,0,0.1);
+    border-top: 8px solid #222;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+    display: none; /* Hide by default */
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .image-gallery {
+      flex-direction: column;
+      gap: 20px;
+    }
+    .image-pair {
+      width: 90%;
+    }
+  }
+
+  
+  .imbalance-info {
+  margin-top: 30px;
+  background-color: #f8f8f8;
+  color: #111;
+  padding: 20px;
+  border-left: 4px solid #222;
+  font-size: 1rem;
+  line-height: 1.6;
+  border-radius: 6px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
