@@ -37,6 +37,17 @@
       <h3 id="prediction" style="display:none;"></h3>
     </div>
 
+    <div id="feedback-form" style="display: none; margin-top: 20px;">
+        <label for="correction">Is this prediction correct?</label><br/>
+        <button onclick="submitFeedback(true)">Yes</button>
+        <button onclick="showCorrectionInput()">No</button>
+      
+        <div id="correction-input" style="margin-top: 10px; display: none;">
+          <input type="text" id="correct-prediction" placeholder="Enter correct label">
+          <button onclick="submitFeedback(false)">Submit Correction</button>
+        </div>
+    </div>
+
     <div class="retrain-section">
       <button id="retrain-btn">Retrain Model</button>
       <div id="progress-container" style="display: none;">
@@ -123,31 +134,61 @@
         imageBox.appendChild(label);
         gallery.appendChild(imageBox);
       });
-    }
+    };
 
+  
+    async function submitFeedback(isCorrect) {
+      if (isCorrect) {
+            document.getElementById("feedback-form").style.display = "none";
+            alert("Thanks for confirming the prediction!");
+            return;
+        }
+
+      const correctPrediction = document.getElementById("correct-prediction").value;
+      if (!correctPrediction) return;
+  
+      const formData = new FormData();
+      formData.append("correct_prediction", correctPrediction);
+  
+      await fetch("/feedback/", {
+        method: "POST",
+        body: formData
+      });
+  
+      alert("Thanks! Your correction has been saved.");
+      document.getElementById("feedback-form").style.display = "none";
+    }
+  
+    function showCorrectionInput() {
+      document.getElementById("correction-input").style.display = "block";
+    }
+  
     document.getElementById("upload-form").onsubmit = async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
-
+  
       document.getElementById("loading").style.display = "block";
-
+  
       const res = await fetch("/predict/", {
         method: "POST",
         body: formData,
       });
-
+  
       const result = await res.json();
       document.getElementById("loading").style.display = "none";
-
+  
       if (result.image && result.prediction) {
         document.getElementById("uploaded").src = result.image + "?t=" + Date.now();
         document.getElementById("uploaded").style.display = "block";
         document.getElementById("prediction").textContent = "The Person is suspected to have : " + result.prediction;
         document.getElementById("prediction").style.display = "block";
+        lastFilename = result.filename;
+        document.getElementById("feedback-form").style.display = "block";
+        document.getElementById("correction-input").style.display = "none";
+        document.getElementById("correct-prediction").value = "";
         setTimeout(fetchPreviousUploads, 500);
       }
     };
-
     window.onload = fetchPreviousUploads;
   </script>
 </body>

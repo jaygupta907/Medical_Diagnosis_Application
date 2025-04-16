@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile,Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
@@ -12,6 +12,7 @@ import uvicorn
 import time
 from analysis import plot_tsne,plot_distribution
 from fastapi.responses import JSONResponse
+import prometheus_client
 
 app = FastAPI()
 
@@ -101,6 +102,15 @@ async def predict(file: UploadFile = File(...)):
         "prediction": predicted_class,
         "previous_uploads": previous_uploads
     }
+
+@app.post("/feedback/")
+async def feedback(correct_prediction: str = Form(...)):
+    image_count = len([f for f in os.listdir(UPLOAD_FOLDER) if f.endswith(".png")]) + 1
+    text_filename = f"uploaded_{image_count-1}.txt"
+    pred_path = os.path.join(UPLOAD_FOLDER, text_filename)
+    with open(pred_path, "a") as f:
+        f.write(f"\n{correct_prediction}")
+    return {"message": "Correction saved."}
 
 @app.get("/retrain/")
 async def retrain_model():
