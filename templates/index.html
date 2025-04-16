@@ -73,6 +73,32 @@
   
   <div class="section-gap"></div>
   <script>
+      document.getElementById("upload-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+  
+      document.getElementById("loading").style.display = "block";
+  
+      const res = await fetch("/predict/", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const result = await res.json();
+      document.getElementById("loading").style.display = "none";
+  
+      if (result.image && result.prediction) {
+        document.getElementById("uploaded").src = result.image + "?t=" + Date.now();
+        document.getElementById("uploaded").style.display = "block";
+        document.getElementById("prediction").textContent = "The Person is suspected to have : " + result.prediction;
+        document.getElementById("prediction").style.display = "block";
+        lastFilename = result.filename;
+        document.getElementById("feedback-form").style.display = "block";
+        document.getElementById("correction-input").style.display = "none";
+        document.getElementById("correct-prediction").value = "";
+        setTimeout(fetchPreviousUploads, 500);
+      }
+    };
     document.getElementById("retrain-btn").addEventListener("click", function () {
       const progressText = document.getElementById("progress-text");
       const progressContainer = document.getElementById("progress-container");
@@ -122,7 +148,7 @@
         imageBox.className = "image-pair";
 
         const image = document.createElement("img");
-        image.src = `/${entry.image}?t=${new Date().getTime()}`;
+        image.src = `${entry.image}?t=${new Date().getTime()}`;
         image.alt = "Previous Upload";
 
         const label = document.createElement("p");
@@ -147,8 +173,10 @@
       const correctPrediction = document.getElementById("correct-prediction").value;
       if (!correctPrediction) return;
   
+
       const formData = new FormData();
       formData.append("correct_prediction", correctPrediction);
+      formData.append("image_filename", lastFilename)
   
       await fetch("/feedback/", {
         method: "POST",
@@ -163,32 +191,6 @@
       document.getElementById("correction-input").style.display = "block";
     }
   
-    document.getElementById("upload-form").onsubmit = async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-  
-      document.getElementById("loading").style.display = "block";
-  
-      const res = await fetch("/predict/", {
-        method: "POST",
-        body: formData,
-      });
-  
-      const result = await res.json();
-      document.getElementById("loading").style.display = "none";
-  
-      if (result.image && result.prediction) {
-        document.getElementById("uploaded").src = result.image + "?t=" + Date.now();
-        document.getElementById("uploaded").style.display = "block";
-        document.getElementById("prediction").textContent = "The Person is suspected to have : " + result.prediction;
-        document.getElementById("prediction").style.display = "block";
-        lastFilename = result.filename;
-        document.getElementById("feedback-form").style.display = "block";
-        document.getElementById("correction-input").style.display = "none";
-        document.getElementById("correct-prediction").value = "";
-        setTimeout(fetchPreviousUploads, 500);
-      }
-    };
     window.onload = fetchPreviousUploads;
   </script>
 </body>
