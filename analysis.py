@@ -122,7 +122,3 @@ def plot_tsne():
         fig.write_image(fig_path)
         logging.info(f"Saved t-SNE plot for {split} set at {fig_path}")
         return { "train": "/analysis/tsne/train_tsne.png", "test": "/analysis/tsne/test_tsne.png" }
-
-# if __name__ == "__main__":
-#     plot_distribution()
-#     plot_tsne()
