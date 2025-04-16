@@ -1,11 +1,11 @@
-# Base image
-FROM ubuntu:24.10
+# Base image (slim version)
+FROM ubuntu:22.04
 
 # Avoid prompts during package installs
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install basic dependencies (you can add more as needed)
-RUN apt-get update && apt-get install -y \
+# Install basic dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     git \
@@ -15,10 +15,14 @@ RUN apt-get update && apt-get install -y \
 # Create a working directory
 WORKDIR /app
 
-# Copy all files, excluding some dirs using .dockerignore
+# Copy project files
 COPY . /app
 
-RUN pip install -r requirements.txt
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Expose FastAPI port (optional but recommended)
+EXPOSE 8000
 
 # Default command
-CMD ["/bin/bash"]
+CMD ["python3", "server.py"]
