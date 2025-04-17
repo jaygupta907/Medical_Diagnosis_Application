@@ -161,5 +161,6 @@ if __name__ == "__main__":
     parser.add_argument('--num_epochs', type=int, default=1, help='Epochs for model training')
     parser.add_argument('--learning_rate', type=float, default=0.0003, help='Learning Rate for training')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training')
+    parser.add_argument('--eval_frequency', type=int, default=1, help='frequency for evaluation on validation dataset')
     args = parser.parse_args()
     main(args)

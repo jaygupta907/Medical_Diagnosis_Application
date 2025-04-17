@@ -24,5 +24,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Expose FastAPI port (optional but recommended)
 EXPOSE 8000
 
-# Default command
 CMD ["python3", "server.py"]

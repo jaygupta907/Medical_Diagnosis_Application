@@ -15,11 +15,13 @@ from io import BytesIO
 from sqlmodel import SQLModel, Field, Session, select, create_engine
 from typing import Optional
 import datetime
+import os
 
 app = FastAPI()
 
 # Database setup
 DATABASE_URL = "sqlite:///./uploads/predictions.db"
+os.makedirs("uploads",exist_ok=True)
 engine = create_engine(DATABASE_URL)
 
 class Prediction(SQLModel, table=True):
