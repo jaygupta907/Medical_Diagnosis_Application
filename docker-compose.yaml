@@ -1,4 +1,5 @@
-version: '3'
+version: '3.8'
+
 services:
   app:
     build: .
@@ -6,15 +7,26 @@ services:
       - "8000:8000"
     depends_on:
       - mlflow
+    networks:
+      - app-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - MLFLOW_TRACKING_URI=http://mlflow:8080 
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:latest
     ports:
       - "8080:8080"
-    volumes:
-      - ./mlruns:/mlflow/mlruns
-    command: mlflow server \
-             --backend-store-uri sqlite:///mlflow.db \
-             --default-artifact-root /mlflow/mlruns \
-             --host 0.0.0.0 \
-             --port 8080
+    command: mlflow server --host 0.0.0.0 --port 8080 --backend-store-uri /mlflow/mlruns
+    networks:
+      - app-network
+
+networks:
+  app-network:

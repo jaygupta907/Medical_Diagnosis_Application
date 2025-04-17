@@ -8,7 +8,7 @@ from tqdm import tqdm
 import mlflow
 from mlflow.models import infer_signature  
 import argparse
-
+import os
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -93,7 +93,7 @@ class Trainer:
 
 def main(args):
     logger.info("Setting MLflow tracking URI and experiment.")
-    mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
+    mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
     mlflow.set_experiment("Lung_Disease_Prediction")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"

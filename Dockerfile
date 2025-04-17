@@ -1,5 +1,4 @@
-# Base image (slim version)
-FROM ubuntu:22.04
+FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
 
 # Avoid prompts during package installs
 ENV DEBIAN_FRONTEND=noninteractive
