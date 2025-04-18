@@ -1,3 +1,4 @@
 datasets/
 model/
 uploads/
+*.egg-info/

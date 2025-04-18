@@ -7,10 +7,10 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from PIL import Image
 import torch
 import torchvision.transforms as transforms
-from model import resnet
+from training.model import resnet
 import uvicorn
 import time
-from analysis import plot_tsne, plot_distribution
+from training.analysis import plot_tsne, plot_distribution
 from io import BytesIO
 from sqlmodel import SQLModel, Field, Session, select, create_engine
 from typing import Optional
