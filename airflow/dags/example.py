@@ -1,18 +1,18 @@
 from datetime import datetime, timedelta
 from airflow.models.dag import DAG
 from airflow.operators.python import PythonOperator
+import requests
 
-def print_hello():
-    print("👋 Hello from Airflow!")
-
-def print_date():
-    print(f"📅 Current date is: {datetime.now()}")
 
 default_args = {
     'owner': 'airflow',
     'retries': 1,
     'retry_delay': timedelta(minutes=2),
 }
+
+def call_app_api():
+    response = requests.get("http://app:8000/retrain/")
+    print(response.status_code, response.text)
 
 with DAG(
     dag_id='test_hello_dag',
@@ -24,14 +24,9 @@ with DAG(
     tags=['test'],
 ) as dag:
 
-    task_hello = PythonOperator(
-        task_id='say_hello',
-        python_callable=print_hello,
+    task = PythonOperator(
+        task_id="call_app_service",
+        python_callable=call_app_api,
     )
 
-    task_date = PythonOperator(
-        task_id='show_date',
-        python_callable=print_date,
-    )
-
-    task_hello >> task_date
+    task

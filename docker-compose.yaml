@@ -23,6 +23,14 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - MLFLOW_TRACKING_URI=http://mlflow:8080 
 
+    volumes:
+      - ./uploads:/app/uploads
+      - ./analysis:/app/analysis
+      - ./static:/app/static
+      - ./datasets:/app/datasets
+      - ./model:/app/model
+      - ./templates:/app/templates
+
   mlflow:
     image: ghcr.io/mlflow/mlflow:latest
     ports:
