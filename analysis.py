@@ -55,7 +55,7 @@ def plot_distribution():
 
         fig.write_image(png_path)
         logging.info(f"Saved plots for {split} at {png_path}")
-        return { "train": "/analysis/distribution/train_image_distribution.png", "test": "/analysis/distribution/test_image_distribution.png" }
+    return { "train": "/analysis/distribution/train_image_distribution.png", "test": "/analysis/distribution/test_image_distribution.png" }
 
 def plot_tsne():
     for split in ['train', 'test']:
@@ -121,4 +121,4 @@ def plot_tsne():
         fig_path = os.path.join(tsne_dir, f"{split}_tsne.png")
         fig.write_image(fig_path)
         logging.info(f"Saved t-SNE plot for {split} set at {fig_path}")
-        return { "train": "/analysis/tsne/train_tsne.png", "test": "/analysis/tsne/test_tsne.png" }
+    return { "train": "/analysis/tsne/train_tsne.png", "test": "/analysis/tsne/test_tsne.png" }

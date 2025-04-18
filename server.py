@@ -16,6 +16,12 @@ from sqlmodel import SQLModel, Field, Session, select, create_engine
 from typing import Optional
 import datetime
 import os
+from prometheus_client import start_http_server, Summary
+from prometheus_client import Counter, Gauge
+from prometheus_client import disable_created_metrics
+disable_created_metrics()
+
+
 
 app = FastAPI()
 
@@ -42,6 +48,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/analysis", StaticFiles(directory="analysis"), name="analysis")
 
 templates = Jinja2Templates(directory="templates")
+
+
+
+api_call = Counter('api_call_counter', 'number of times the api was called to predict')
+
 
 # Model setup
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -81,6 +92,7 @@ def get_previous_uploads():
 
 @app.post("/predict/")
 async def predict(file: UploadFile = File(...)):
+    api_call.inc()
     image = Image.open(file.file).convert("RGB")
     image = image.resize((128, 128))
 
@@ -162,4 +174,5 @@ def run_distribution():
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 if __name__ == "__main__":
+    start_http_server(9000)
     uvicorn.run(app, host="0.0.0.0", port=8000)
