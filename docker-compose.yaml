@@ -65,8 +65,53 @@ services:
       - app-network
     restart: unless-stopped
 
+  airflow-webserver:
+    image: apache/airflow:2.8.1
+    restart: always
+    depends_on:
+      - airflow-scheduler
+      - airflow-db
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
+      - AIRFLOW__WEBSERVER__PORT=8081
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+    networks:
+      - app-network
+    command: airflow webserver --port 8081
+
+  airflow-scheduler:
+    image: apache/airflow:2.8.1
+    restart: always
+    depends_on:
+      - airflow-db
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+    networks:
+      - app-network
+    command: scheduler
+
+  airflow-db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow-db-volume:/var/lib/postgresql/data
+    networks:
+      - app-network
+
 volumes:
   grafana-storage:
+  airflow-db-volume:
 
 networks:
   app-network:
