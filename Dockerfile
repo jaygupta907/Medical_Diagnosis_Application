@@ -14,11 +14,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create a working directory
 WORKDIR /app
 
-# Copy project files
-COPY . /app
+#Cope requirements.txt
+COPY requirements.txt /app
+
+#Copy all python files
+COPY *.py /app
+
+COPY training /app/training
+COPY tuning /app/tuning
+
 
 # Install Python dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install .
 
 # Expose FastAPI port (optional but recommended)
 EXPOSE 8000
