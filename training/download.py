@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 parser = argparse.ArgumentParser(description='Training Arguments')
 parser.add_argument('--download_url',type=str,default='https://www.kaggle.com/api/v1/datasets/download/prashant268/chest-xray-covid19-pneumonia')
 parser.add_argument('--zip_path',type=str,default='chestxray.zip')
-parser.add_argument('--dataset_path',type=str,default='datasets/chestxray')
+parser.add_argument('--dataset_path',type=str,default='../datasets/chestxray')
 args = parser.parse_args()
  
 

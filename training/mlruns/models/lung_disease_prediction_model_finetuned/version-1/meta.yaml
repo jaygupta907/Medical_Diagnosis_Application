@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1745818387225
+current_stage: None
+description: ''
+last_updated_timestamp: 1745818387225
+name: lung_disease_prediction_model_finetuned
+run_id: ce893b17dd1f4410bb5a30971d524139
+run_link: ''
+source: mlflow-artifacts:/532689076896896684/ce893b17dd1f4410bb5a30971d524139/artifacts/model
+status: READY
+status_message: null
+storage_location: mlflow-artifacts:/532689076896896684/ce893b17dd1f4410bb5a30971d524139/artifacts/model
+user_id: null
+version: 1

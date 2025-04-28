@@ -22,7 +22,6 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - MLFLOW_TRACKING_URI=http://mlflow:8080 
-
     volumes:
       - ./uploads:/app/uploads
       - ./analysis:/app/analysis
@@ -73,12 +72,38 @@ services:
       - app-network
     restart: unless-stopped
 
+  airflow-db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow-db-volume:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  airflow-init:
+    image: apache/airflow:2.8.1
+    depends_on:
+      - airflow-db
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
+    networks:
+      - app-network
+    entrypoint: >
+      bash -c "
+        airflow db migrate &&
+        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com
+      "
+
   airflow-webserver:
     image: apache/airflow:2.8.1
     restart: always
     depends_on:
-      - airflow-scheduler
-      - airflow-db
+      - airflow-init
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
@@ -95,7 +120,7 @@ services:
     image: apache/airflow:2.8.1
     restart: always
     depends_on:
-      - airflow-db
+      - airflow-init
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
@@ -104,18 +129,6 @@ services:
     networks:
       - app-network
     command: scheduler
-
-  airflow-db:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
-    volumes:
-      - airflow-db-volume:/var/lib/postgresql/data
-    networks:
-      - app-network
 
 volumes:
   grafana-storage:

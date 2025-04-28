@@ -30,6 +30,6 @@ RUN pip3 install .
 # Expose FastAPI port (optional but recommended)
 EXPOSE 8000
 
-RUN python3 download.py
+RUN python3 training/download.py
 
 CMD ["python3", "server.py"]
