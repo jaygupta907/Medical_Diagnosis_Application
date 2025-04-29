@@ -18,7 +18,7 @@ class chestdataset:
     def _get_transforms(self):
         # Define data transformations
         transform_list = [
-            transforms.Resize((128,128)),
+            transforms.Resize((224,224)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
         ]
@@ -29,7 +29,7 @@ class chestdataset:
                 transforms.RandomRotation(30),
                 transforms.RandomHorizontalFlip(),
                 transforms.RandomAffine(translate=(0.1, 0.1),degrees=0),
-                transforms.RandomResizedCrop(128, scale=(0.8, 1.0)),
+                transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
             ])
             transform_list = [augmentations] + transform_list
         

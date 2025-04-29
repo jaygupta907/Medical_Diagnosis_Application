@@ -22,6 +22,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - MLFLOW_TRACKING_URI=http://mlflow:8080 
+      - AIRFLOW__WEBSERVER__SECRET_KEY=your_secret_key_here  # Add secret_key here
     volumes:
       - ./uploads:/app/uploads
       - ./analysis:/app/analysis
@@ -91,6 +92,7 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
+      - AIRFLOW__WEBSERVER__SECRET_KEY=your_secret_key_here  # Add secret_key here
     networks:
       - app-network
     entrypoint: >
@@ -108,10 +110,12 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
       - AIRFLOW__WEBSERVER__PORT=8081
+      - AIRFLOW__WEBSERVER__SECRET_KEY=b195f3bda6cf9350fbb7be3d4f59c4b3
     ports:
       - "8081:8081"
     volumes:
       - ./airflow/dags:/opt/airflow/dags
+      - ./uploads:/opt/airflow/uploads
     networks:
       - app-network
     command: airflow webserver --port 8081
@@ -124,8 +128,10 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db/airflow
+      - AIRFLOW__WEBSERVER__SECRET_KEY=b195f3bda6cf9350fbb7be3d4f59c4b3
     volumes:
       - ./airflow/dags:/opt/airflow/dags
+      - ./uploads:/opt/airflow/uploads
     networks:
       - app-network
     command: scheduler
