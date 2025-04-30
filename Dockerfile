@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create a working directory
 WORKDIR /app
 
-#Cope requirements.txt
+#Copy requirements.txt
 COPY requirements.txt /app
 
 #Copy all python files
@@ -30,6 +30,5 @@ RUN pip3 install .
 # Expose FastAPI port (optional but recommended)
 EXPOSE 8000
 
-RUN python3 training/download.py
 
 CMD ["python3", "server.py"]

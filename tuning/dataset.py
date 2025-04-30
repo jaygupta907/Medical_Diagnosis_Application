@@ -4,6 +4,7 @@ from pathlib import Path
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
+import os
 
 class ImageDatabaseDataset(Dataset):
     """
@@ -101,7 +102,7 @@ class ImageDatabaseDataLoader:
         else:
             self.db_path = Path(db_path)
 
-        if not self.db_path.exists():
+        if not os.path.exists(self.db_path):
             raise FileNotFoundError(f"Database not found at {self.db_path}")
 
         self.table_name = table_name

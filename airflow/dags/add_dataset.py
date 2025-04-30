@@ -1,6 +1,6 @@
 import sqlite3
 
-def move_to_tuned_table(db_path='/opt/airflow/uploads/predictions.db'):
+def move_to_dataset(db_path='/opt/airflow/dataset'):
     """
     Move all entries from 'prediction' to 'tuned' table and remove the entries from the 'prediction' table 
     up to the last serial number before the fine-tuning process started.

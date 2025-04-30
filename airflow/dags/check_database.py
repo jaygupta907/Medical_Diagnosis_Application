@@ -6,7 +6,7 @@ def check_database(**kwargs):
     :return: Boolean indicating whether the threshold is crossed.
     """
     db_path = '/opt/airflow/uploads/predictions.db'  # Path to the SQLite database
-    threshold = 100  # Set your threshold value here
+    threshold = 1  # Set your threshold value here
 
     try:
         # Connect to the SQLite database

@@ -7,7 +7,7 @@ from airflow.utils.dates import days_ago
 # Now you can import the modules
 from check_database import check_database
 from call_api import call_app_api
-from move_to_tuned import move_to_tuned_table
+from add_dataset import move_to_dataset
 
 # Default arguments for the DAG
 default_args = {
@@ -18,7 +18,7 @@ default_args = {
 
 # Airflow DAG definition
 with DAG(
-    dag_id='test_hello_dag',  # Unique DAG ID
+    dag_id='finetuning',  # Unique DAG ID
     default_args=default_args,  # Default arguments for retries, etc.
     description='A simple test DAG to check database threshold and call API',  # Description of the DAG
     schedule_interval='@daily',  # Scheduling interval for the DAG (daily in this case)
@@ -45,7 +45,7 @@ with DAG(
 
     move_to_tuned_task = PythonOperator(
         task_id='move_to_tuned_task',
-        python_callable=move_to_tuned_table,
+        python_callable=move_to_dataset,
     )
 
     # Setting up dependencies

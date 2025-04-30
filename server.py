@@ -18,7 +18,7 @@ import datetime
 import os
 from prometheus_client import start_http_server, Summary
 from prometheus_client import Counter, Gauge
-
+import subprocess
 
 
 
@@ -149,6 +149,11 @@ async def feedback(image_filename: str = Form(...), correct_prediction: str = Fo
                 session.commit()
     return {"message": "Feedback saved."}
 
+@app.get("/finetune/")
+async def finetune_model():
+    subprocess.run(["python3", "tuning/finetune.py","--run_name", "tuning_run_1", "--num_epochs", "5", "--learning_rate", "0.0003"])
+    return {"message": "Model retraining started."}
+    
 @app.get("/retrain/")
 async def retrain_model():
     def event_stream():
