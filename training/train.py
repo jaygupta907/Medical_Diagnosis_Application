@@ -155,7 +155,7 @@ def main(args):
     logger.info(f"Using device: {device}")
 
     dataset = chestdataset(
-        dataset_path="../datasets/chestxray/Data",
+        dataset_path="datasets/chestxray/Data",
         batch_size=args.batch_size,
         apply_augmentation=True,
     )
@@ -188,7 +188,7 @@ def main(args):
 
         trainer.test()
 
-        model_path = "../model/trained_model.pt"
+        model_path = "model/trained_model.pt"
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
         torch.save(trainer.model.state_dict(), model_path)
         logger.info(f"Model saved to {model_path}")

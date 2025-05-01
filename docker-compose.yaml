@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   app:
@@ -21,7 +20,7 @@ services:
               capabilities: [gpu]
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-      - MLFLOW_TRACKING_URI=http://mlflow:8080 
+      - MLFLOW_TRACKING_URI=http://mlflow:8080
       - AIRFLOW__WEBSERVER__SECRET_KEY=b195f3bda6cf9350fbb7be3d4f59c4b3
     volumes:
       - ./uploads:/app/uploads
@@ -30,6 +29,8 @@ services:
       - ./datasets:/app/datasets
       - ./model:/app/model
       - ./templates:/app/templates
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:latest
@@ -49,6 +50,7 @@ services:
       - app-network
     depends_on:
       - node-exporter
+      - nvidia-dcgm-exporter
 
   grafana:
     image: grafana/grafana:latest
@@ -73,6 +75,22 @@ services:
       - app-network
     restart: unless-stopped
 
+  nvidia-dcgm-exporter:
+    image: nvidia/dcgm-exporter:latest
+    container_name: nvidia-dcgm-exporter
+    ports:
+      - "9400:9400"  # Exposing the metrics on port 9400
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - app-network
+    restart: unless-stopped
+  
   airflow-db:
     image: postgres:15
     restart: always
@@ -86,7 +104,10 @@ services:
       - app-network
 
   airflow-init:
-    image: apache/airflow:2.8.1
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    image: custom-airflow:latest
     depends_on:
       - airflow-db
     environment:
@@ -102,7 +123,10 @@ services:
       "
 
   airflow-webserver:
-    image: apache/airflow:2.8.1
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    image: custom-airflow:latest
     restart: always
     depends_on:
       - airflow-init
@@ -117,12 +141,18 @@ services:
       - ./airflow/dags:/opt/airflow/dags
       - ./uploads:/opt/airflow/uploads
       - ./datasets:/opt/airflow/datasets
+      - ./.git:/opt/airflow/.git
     networks:
       - app-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: airflow webserver --port 8081
 
   airflow-scheduler:
-    image: apache/airflow:2.8.1
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    image: custom-airflow:latest
     restart: always
     depends_on:
       - airflow-init
@@ -134,8 +164,11 @@ services:
       - ./airflow/dags:/opt/airflow/dags
       - ./uploads:/opt/airflow/uploads
       - ./datasets:/opt/airflow/datasets
+      - ./.git:/opt/airflow/.git
     networks:
       - app-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: scheduler
 
 volumes:

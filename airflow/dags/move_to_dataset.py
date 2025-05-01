@@ -5,28 +5,8 @@ from PIL import Image
 import subprocess
 import requests
 
-import sys
-import importlib.util
-import subprocess
-
-if importlib.util.find_spec("pillow") is  None:
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pillow'])
-
-if importlib.util.find_spec("dvc") is  None:
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'dvc'])
 
 
-def get_latest_mlflow_model_version(model_name="lung_disease_prediction_model_finetuned", mlflow_host="http://mlflow:8080"):
-    try:
-        url = f"{mlflow_host}/api/2.0/mlflow/registered-models/get-latest-versions"
-        response = requests.get(url, params={"name": model_name})
-        response.raise_for_status()
-        versions = response.json().get("model_versions", [])
-        latest_version = max(int(v["version"]) for v in versions) if versions else 0
-        return latest_version
-    except Exception as e:
-        print(f"Could not fetch latest model version from MLflow: {e}")
-        return None
 
 def move_to_dataset(db_path="/opt/airflow/uploads/predictions.db", datasets_root="/opt/airflow/datasets/chestxray/Data/train"):
     try:
@@ -64,17 +44,6 @@ def move_to_dataset(db_path="/opt/airflow/uploads/predictions.db", datasets_root
 
             # Delete the record after saving the imagedoc
             # cursor.execute("DELETE FROM prediction WHERE id = ?", (row[0],))
-
-        subprocess.run(['dvc', 'add', 'datasets/'], check=True)
-        subprocess.run(['git', 'add', 'datasets.dvc', '.gitignore'], check=True)
-        subprocess.run(['git', 'commit', '-m', "New version of datasets"], check=True)
-
-        latest_version = get_latest_mlflow_model_version()
-        print(f"Latest MLflow model version: {latest_version}")
-        if latest_version:
-            subprocess.run(['git', 'tag', '-a', f'v{latest_version}', '-m', f'Version {latest_version}'], check=True)
-        else:
-            print("Skipping git tag: unable to determine MLflow model version.")
 
         conn.commit()
         print(f"Moved {len(rows)} images to dataset folders.")

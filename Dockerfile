@@ -18,7 +18,8 @@ WORKDIR /app
 COPY requirements.txt /app
 
 #Copy all python files
-COPY *.py /app
+COPY server.py /app
+COPY setup.py /app
 
 COPY training /app/training
 COPY tuning /app/tuning

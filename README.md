@@ -10,9 +10,14 @@ export MLFLOW_TRACKING_URI=http://localhost:2000
 ```
 
 ```bash
-cd training 
-python download.py
+python training/download.py
 ```
 ```bash
-python train.py
+python training/train.py
+```
+```bash
+docker compose build --no-cache app   
+```
+```bash
+python versioning.py
 ```
