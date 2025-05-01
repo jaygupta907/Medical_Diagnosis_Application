@@ -64,7 +64,7 @@ model = resnet(in_planes=3, outputs=3).to(device)
 model.load_state_dict(torch.load("model/trained_model.pt", map_location=device))
 model.eval()
 
-classes = ["COVID-19", "Normal", "Pneumonia"]
+classes = ["COVID-19", "NORMAL", "PNEUMONIA"]
 
 # Transforms
 transform = transforms.Compose([
@@ -151,7 +151,7 @@ async def feedback(image_filename: str = Form(...), correct_prediction: str = Fo
 
 @app.get("/finetune/")
 async def finetune_model():
-    subprocess.run(["python3", "tuning/finetune.py","--run_name", "tuning_run_1", "--num_epochs", "5", "--learning_rate", "0.0003"])
+    subprocess.run(["python3", "tuning/finetune.py","--run_name", "tuning_run_1", "--num_epochs", "10", "--learning_rate", "0.0003"])
     return {"message": "Model retraining started."}
     
 @app.get("/retrain/")

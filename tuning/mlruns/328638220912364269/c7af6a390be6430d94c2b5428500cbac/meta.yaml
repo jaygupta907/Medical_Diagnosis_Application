@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/328638220912364269/c7af6a390be6430d94c2b5428500cbac/artifacts
+end_time: 1746040866164
+entry_point_name: ''
+experiment_id: '328638220912364269'
+lifecycle_stage: active
+run_id: c7af6a390be6430d94c2b5428500cbac
+run_name: tuning_run_1
+run_uuid: c7af6a390be6430d94c2b5428500cbac
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746040863003
+status: 3
+tags: []
+user_id: jay

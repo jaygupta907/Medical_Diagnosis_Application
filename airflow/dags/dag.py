@@ -7,7 +7,7 @@ from airflow.utils.dates import days_ago
 # Now you can import the modules
 from check_database import check_database
 from call_api import call_app_api
-from add_dataset import move_to_dataset
+from move_to_dataset import move_to_dataset
 
 # Default arguments for the DAG
 default_args = {
@@ -43,11 +43,11 @@ with DAG(
         python_callable=lambda: print("API call skipped due to threshold not being crossed."),
     )
 
-    move_to_tuned_task = PythonOperator(
-        task_id='move_to_tuned_task',
+    move_to_dataset = PythonOperator(
+        task_id='move_to_dataset_task',
         python_callable=move_to_dataset,
     )
 
     # Setting up dependencies
     branch_task >> [call_api_task, skip_api_task]
-    call_api_task >> move_to_tuned_task
+    call_api_task >> move_to_dataset

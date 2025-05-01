@@ -96,11 +96,7 @@ class ImageDatabaseDataLoader:
             table_name (str): Name of the table containing image and label data.
             db_path (Path or str, optional): Path to the database file. Defaults to ./uploads/predictions.db.
         """
-        if db_path is None:
-            # Default: assume working directory structure
-            self.db_path = "../uploads/predictions.db"
-        else:
-            self.db_path = Path(db_path)
+        self.db_path = db_path
 
         if not os.path.exists(self.db_path):
             raise FileNotFoundError(f"Database not found at {self.db_path}")

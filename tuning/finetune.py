@@ -112,16 +112,16 @@ def main(args):
     logger.info(f"Using device: {device}")
 
     # Load dataset
-    dataset = ImageDatabaseDataLoader(batch_size=32, shuffle=True, transform=None, table_name='prediction',db_path="../uploads/predictions.db")
+    dataset = ImageDatabaseDataLoader(batch_size=32, shuffle=True, transform=None, table_name='prediction',db_path="uploads/predictions.db")
     train_loader = dataset.get_dataloader()
 
     # Initialize model
     model = resnet(in_planes=3, outputs=3)
-    model_path = "../model/trained_model.pt"
+    model_path = "model/trained_model.pt"
     if os.path.exists(model_path):
         model.load_state_dict(torch.load(model_path, map_location=device))
     else:
-        model.load_state_dict(torch.load("../model/finetuned_model.pt", map_location=device))
+        model.load_state_dict(torch.load("model/finetuned_model.pt", map_location=device))
     
 
     # Define loss and optimizer
@@ -148,7 +148,7 @@ def main(args):
         trainer.train()
 
         # Save the fine-tuned model
-        model_path = "../model/finetuned_model.pt"
+        model_path = "model/finetuned_model.pt"
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
         torch.save(trainer.model.state_dict(), model_path)
         logger.info(f"Model saved to {model_path}")

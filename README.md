@@ -5,13 +5,14 @@ conda env create -n medical python=3.10
 pip install .
 ```
 ```bash
-mlflow server --host 0.0.0.0 --port 8080
-export MLFLOW_TRACKING_URI=http://localhost:8080 
+mlflow server --host 0.0.0.0 --port 2000
+export MLFLOW_TRACKING_URI=http://localhost:2000
 ```
 
 ```bash
-python training/download.py
+cd training 
+python download.py
 ```
 ```bash
-python training/train.py
+python train.py
 ```
