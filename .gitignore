@@ -2,3 +2,4 @@ datasets/
 model/
 uploads/
 *.egg-info/
+/datasets
