@@ -42,7 +42,7 @@ def move_to_dataset(db_path="/opt/airflow/uploads/predictions.db", datasets_root
                 print(f"Failed to save image to {image_path}: {e}")
                 continue
 
-            # Delete the record after saving the imagedoc
+            #Delete the record after saving the imagedoc
             # cursor.execute("DELETE FROM prediction WHERE id = ?", (row[0],))
 
         conn.commit()
