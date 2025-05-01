@@ -43,6 +43,7 @@ setup(
         'Jinja2==3.1.6',
         'joblib==1.4.2',
         'kiwisolver==1.4.8',
+        'kaleido',
         'Mako==1.3.10',
         'Markdown==3.8',
         'MarkupSafe==3.0.2',

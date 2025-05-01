@@ -133,6 +133,7 @@ services:
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./uploads:/opt/airflow/uploads
+      - ./datasets:/opt/airflow/datasets
     networks:
       - app-network
     command: scheduler
